@@ -10,13 +10,13 @@
 
 enum
 {
-    white = rgb(255, 255, 255),
-    black = rgb(0, 0, 0),
-    red = rgb(255, 0, 0),
-    green = rgb(0, 255, 0),
-    blue = rgb(0, 0, 255),
-    yellow = rgb(255, 255, 0),
-    orange = rgb(255, 165, 0),
+    WHITE = rgb(255, 255, 255),
+    BLACK = rgb(0, 0, 0),
+    RED = rgb(255, 0, 0),
+    GREEN = rgb(0, 255, 0),
+    BLUE = rgb(0, 0, 255),
+    YELLOW = rgb(255, 255, 0),
+    ORANGE = rgb(255, 165, 0),
 };
 
 void ScreenInit(uint16_t color);

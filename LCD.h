@@ -6,7 +6,6 @@
 
 #define LCD_WIDTH 240
 #define LCD_LENGTH 320
-#define SPI_LCD
 
 inline void point(uint16_t x, uint16_t y, uint16_t color);
 inline void setBackLight(bool light);

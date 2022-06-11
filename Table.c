@@ -74,9 +74,9 @@ TableStruct defaultTable(uint16_t dataSize, int16_t left, int16_t top, uint16_t 
     result.gridLine = 3;
     result.gridStep = 15;
     result.xStep = 2;
-    result.axisColor = white;
-    result.backColor = black;
-    result.curveColor = red;
+    result.axisColor = WHITE;
+    result.backColor = BLACK;
+    result.curveColor = RED;
     return result;
 }
 

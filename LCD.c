@@ -3,25 +3,15 @@
 #include "delay.h"
 #include "LCD.h"
 
+#define CS_L P4->OUT&=~GPIO_PIN0
+#define RS_L P4->OUT&=~GPIO_PIN1
+#define BL_L P4->OUT&=~GPIO_PIN2
+#define RST_L P4->OUT&=~GPIO_PIN3
 
-#define CS_H MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN0)
-#define RS_H MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN1)
-#define BL_H MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN2)
-#define RST_H MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN3)
-#define WR_H MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4)
-
-#define CS_L MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN0)
-#define RS_L MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1)
-#define BL_L MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2)
-#define RST_L MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3)
-#define WR_L MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4)
-
-#define POUT(val)             \
-    do                        \
-    {                         \
-        P7->OUT = (val);      \
-        P9->OUT = (val) >> 8; \
-    } while (0)
+#define CS_H P4->OUT|=GPIO_PIN0
+#define RS_H P4->OUT|=GPIO_PIN1
+#define BL_H P4->OUT|=GPIO_PIN2
+#define RST_H P4->OUT|=GPIO_PIN3
 
 inline static void writeCmd(uint8_t cmd);
 inline static void writeData(uint8_t data);
@@ -31,14 +21,9 @@ inline void writeCmd(uint8_t cmd)
 {
     CS_L;
     RS_L;
-#ifdef SPI_LCD
     EUSCI_B0->TXBUF=cmd;
     //MAP_SPI_transmitData(EUSCI_B0_BASE, cmd);
-#else
-    POUT(cmd);
-    WR_L;
-    WR_H;
-#endif
+    CS_L;
     CS_H;
 }
 
@@ -46,14 +31,9 @@ inline void writeData(uint8_t data)
 {
     CS_L;
     RS_H;
-#ifdef SPI_LCD
     EUSCI_B0->TXBUF=data;
     //MAP_SPI_transmitData(EUSCI_B0_BASE, data);
-#else
-    POUT(data);
-    WR_L;
-    WR_H;
-#endif
+    CS_L;
     CS_H;
 }
 
@@ -61,16 +41,12 @@ inline void writeColor(uint16_t color)
 {
     CS_L;
     RS_H;
-#ifdef SPI_LCD
     EUSCI_B0->TXBUF=color>>8;
+    CS_L;
     EUSCI_B0->TXBUF=color;
     //MAP_SPI_transmitData(EUSCI_B0_BASE, color >> 8);
     //MAP_SPI_transmitData(EUSCI_B0_BASE, color);
-#else
-    POUT(color);
-    WR_L;
-    WR_H;
-#endif
+    CS_L;
     CS_H;
 }
 
@@ -154,7 +130,6 @@ inline void showImage(uint16_t x_beg, uint16_t y_beg, uint16_t x_end, uint16_t y
 
 void lcdInit(void)
 {
-#ifdef SPI_LCD
     const eUSCI_SPI_MasterConfig spiMasterConfig = {
         EUSCI_B_SPI_CLOCKSOURCE_SMCLK,                           // SMCLK Clock Source
         48000000,                                                 // SMCLK = DCO = 3MHZ
@@ -171,11 +146,6 @@ void lcdInit(void)
     MAP_SPI_initMaster(EUSCI_B0_BASE, &spiMasterConfig);
     /* Enable SPI module */
     MAP_SPI_enableModule(EUSCI_B0_BASE);
-#else
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, 0xff);
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P9, 0xff);
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN4);
-#endif
     MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, 0x0f);
     CS_H;
     BL_L;
@@ -187,7 +157,6 @@ void lcdInit(void)
     delay_ms(50);
     RST_H;
     delay_ms(50);
-    CS_L;
 
     //************* ILI9341≥ı ºªØ **********//
     writeCmd(0xCF);
