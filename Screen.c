@@ -28,11 +28,11 @@ static uint8_t direction = 0;
             break;                  \
         case 2:                     \
             (x) = LCD_WIDTH - 1 - (x);  \
-            (y) = LCD_LENGTH - 1 - (y); \
+            (y) = LCD_HEIGHT - 1 - (y); \
             break;                  \
         case 3:                     \
             temp = (y);             \
-            (y) = LCD_LENGTH - 1 - (x); \
+            (y) = LCD_HEIGHT - 1 - (x); \
             (x) = temp;             \
             break;                  \
         default:                    \
@@ -53,7 +53,7 @@ uint8_t ScreenGetDirection()
 inline void ScreenPoint(short x, short y, uint16_t color)
 {
     coordTrans(x, y);
-    if (x >= 0 && y >= 0 && x < LCD_WIDTH && y < LCD_LENGTH)
+    if (x >= 0 && y >= 0 && x < LCD_WIDTH && y < LCD_HEIGHT)
         point(x ,y , color);
 }
 
@@ -67,7 +67,7 @@ inline void ScreenFillRect(short x_beg, short y_beg, short x_end, short y_end, u
         swap(y_beg, y_end);
 
     // 如果最小值大于屏幕的最大坐标，或者最大值小于屏幕的最小坐标，则不用绘制
-    if (x_beg >= LCD_WIDTH || y_beg >= LCD_LENGTH || x_end < 0 || y_end < 0)
+    if (x_beg >= LCD_WIDTH || y_beg >= LCD_HEIGHT || x_end < 0 || y_end < 0)
         return;
 
     // 如果最小值小于屏幕的最小坐标，则将最小值设置为屏幕的最小坐标,同理最大值也一样
@@ -77,15 +77,15 @@ inline void ScreenFillRect(short x_beg, short y_beg, short x_end, short y_end, u
         y_beg = 0;
     if (x_end >= LCD_WIDTH)
         x_end = LCD_WIDTH - 1;
-    if (y_end >= LCD_LENGTH)
-        y_end = LCD_LENGTH - 1;
+    if (y_end >= LCD_HEIGHT)
+        y_end = LCD_HEIGHT - 1;
 
     fillRect(x_beg, y_beg, x_end, y_end, color);
 }
 
 void ScreenClear(uint16_t color)
 {
-    fillRect(0, 0, LCD_WIDTH - 1, LCD_LENGTH - 1, color);
+    fillRect(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, color);
 }
 
 void ScreenShowChar(char ch, short ulx, short uly, uint16_t color, int backColor)
@@ -122,7 +122,7 @@ void ScreenShowStr(const char *str, short ulx, short uly, uint16_t color, int ba
     }
 }
 
-void ScreenRefreshStr(const char *newStr, short x, short y, const char *lastStr, uint16_t backColor, uint16_t color)
+void ScreenRefreshStr(const char *newStr, short x, short y, const char *lastStr, uint16_t color)
 {
     int newStrLen = strlen(newStr), lastStrLen = strlen(lastStr);
     int maxLength = newStrLen > lastStrLen ? newStrLen : lastStrLen;
@@ -130,11 +130,11 @@ void ScreenRefreshStr(const char *newStr, short x, short y, const char *lastStr,
     {
         if (i >= newStrLen)
         {
-            ScreenShowChar(' ', x, y, color, backColor);
+            ScreenShowChar(' ', x, y, color, -1);
         }
         else if (i >= lastStrLen || newStr[i] != lastStr[i])
         {
-            ScreenShowChar(newStr[i], x, y, color, backColor);
+            ScreenShowChar(newStr[i], x, y, color, -1);
         }
     }
 }
