@@ -75,7 +75,7 @@ MSP-EXP432P401R
 LED（或BK，即背光控制）接P4.2  
 SCK接P1.5  
 MOSI（或SDI）接P1.6  
-DC（或RS，命令和数据区分标志）接P4.1
+DC（或RS，命令和数据区分标志）接P4.1  
 RST（即复位控制）接P4.3  
 CS接P4.0  
 
